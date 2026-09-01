@@ -1,0 +1,91 @@
+# ── Terraform ────────────────────────────────────────────────────────────────
+# Local state (never commit — contains secrets and resource IDs)
+infra/terraform.tfstate
+infra/terraform.tfstate.*
+infra/*.tfstate
+infra/*.tfstate.*
+
+# Provider plugins and modules cache
+infra/.terraform/
+**/.terraform/
+
+# Local variable overrides (contain AWS account, profile, IPs, keys)
+infra/terraform.tfvars
+terraform.tfvars
+*.auto.tfvars
+*.auto.tfvars.json
+
+# Plan files and crash logs
+*.tfplan
+*.tfplan.*
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+
+# Keep lock file — pins provider versions for reproducible builds
+# !infra/.terraform.lock.hcl
+
+# ── Node.js / microservices ──────────────────────────────────────────────────
+node_modules/
+**/node_modules/
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.npm
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+# ── Environment & secrets ────────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+secrets/
+credentials.json
+.aws/credentials
+
+# ── OS & editor ──────────────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+.idea/
+*.swp
+*.swo
+*~
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# ── Logs & temp files ─────────────────────────────────────────────────────────
+*.log
+logs/
+tmp/
+temp/
+.cache/
+*.tmp
+*.bak
+
+# ── Deploy artifacts ─────────────────────────────────────────────────────────
+*.tar.gz
+*.zip
+dist/
+build/

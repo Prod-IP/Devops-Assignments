@@ -1,0 +1,21 @@
+# Copy this file to terraform.tfvars and fill in your values
+# cp terraform.tfvars.example terraform.tfvars
+
+aws_profile    = "your-aws-profile"
+aws_region     = "us-east-1"
+aws_account_id = "123456789012"
+
+project_name = "microservices"
+environment  = "dev"
+
+# VPC
+vpc_cidr            = "10.0.0.0/16"
+public_subnet_cidrs = ["10.0.1.0/24", "10.0.2.0/24"]
+availability_zones  = ["us-east-1a", "us-east-1b"]
+
+# EC2
+ami_id           = "ami-0c7217cdde317cfec"  # Ubuntu 22.04 LTS us-east-1
+instance_type    = "t3.micro"
+key_name         = "your-key-pair-name"     # Must already exist in AWS
+allowed_ssh_cidr = "YOUR_IP/32"             # e.g. "203.0.113.5/32"
+root_volume_size = 20

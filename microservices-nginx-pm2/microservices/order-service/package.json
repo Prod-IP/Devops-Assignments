@@ -1,0 +1,14 @@
+{
+  "name": "order-service",
+  "version": "1.0.0",
+  "description": "Order microservice — manages orders, calls product-service",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev":   "node --watch index.js"
+  },
+  "dependencies": {
+    "axios":   "latest",
+    "express": "latest"
+  }
+}

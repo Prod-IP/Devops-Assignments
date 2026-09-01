@@ -1,0 +1,13 @@
+{
+  "name": "user-service",
+  "version": "1.0.0",
+  "description": "User microservice — manages users",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev":   "node --watch index.js"
+  },
+  "dependencies": {
+    "express": "latest"
+  }
+}
