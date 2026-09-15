@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: microservices-quota
+  namespace: microservices
+spec:
+  hard:
+    # Cap aggregate CPU/memory for the whole namespace
+    requests.cpu: "4"
+    requests.memory: 4Gi
+    limits.cpu: "8"
+    limits.memory: 8Gi
+    # Object counts — keeps demos from exploding the cluster
+    pods: "40"
+    services: "10"
+    configmaps: "20"
+    secrets: "20"
+    persistentvolumeclaims: "5"
+    count/deployments.apps: "10"
+    count/horizontalpodautoscalers.autoscaling: "10"

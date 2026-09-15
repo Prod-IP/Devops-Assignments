@@ -1,0 +1,15 @@
+{
+  "name": "order-service",
+  "version": "1.0.0",
+  "description": "Order microservice — internal ClusterIP service called by user-service",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

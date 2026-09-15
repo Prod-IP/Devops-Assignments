@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: user-service-config
+  namespace: microservices
+  labels:
+    app: user-service
+data:
+  ORDER_SERVICE_URL: "http://order-service:4000"
+  PORT: "3000"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: order-service-config
+  namespace: microservices
+  labels:
+    app: order-service
+data:
+  PORT: "4000"

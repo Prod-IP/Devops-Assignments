@@ -1,0 +1,27 @@
+# Local / tooling
+.minikube-tunnel.log
+.minikube-tunnel.pid
+*.log
+
+# Node
+node_modules/
+npm-debug.log*
+package-lock.json
+
+# Env / secrets (never commit)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*~
+
+# Docker
+*.tar
