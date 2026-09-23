@@ -1,0 +1,7 @@
+.DS_Store
+.git
+.gitignore
+*.md
+.helmignore
+*.tgz
+charts/*.tgz

@@ -1,0 +1,13 @@
+apiVersion: v2
+name: microservices
+description: Umbrella chart — user-service (LoadBalancer) calls order-service (ClusterIP) via K8s DNS
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+dependencies:
+  - name: order-service
+    version: 0.1.0
+    repository: "file://charts/order-service"
+  - name: user-service
+    version: 0.1.0
+    repository: "file://charts/user-service"

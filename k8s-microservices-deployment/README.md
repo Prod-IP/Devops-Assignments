@@ -36,10 +36,16 @@ minikube addons enable metrics-server   # optional, for HPA
 
 cd k8s-microservices-deployment
 
-./scripts/destroy.sh       # clean old service1/service2 deploy if any
-./scripts/deploy.sh        # build :latest → apply -k → tunnel
+# Option A — raw manifests (Kustomize)
+./scripts/deploy.sh
 ./scripts/smoke-test.sh
+
+# Option B — Helm umbrella chart (separate folder)
+./helm/scripts/deploy.sh
+./helm/scripts/smoke-test.sh
 ```
+
+See [`helm/README.md`](helm/README.md) for Helm install / upgrade / rollback details.
 
 ### Hit the API
 
@@ -77,31 +83,24 @@ Example `/api` response:
 k8s-microservices-deployment/
 ├── user-service/          # Public — calls order-service
 ├── order-service/         # Internal — GET /orders
-├── k8s/
-│   ├── kustomization.yaml
-│   ├── namespace.yaml
-│   ├── limitrange.yaml
-│   ├── configmap.yaml
-│   ├── user-service-*.yaml
-│   ├── order-service-*.yaml
-│   ├── hpa-*.yaml
-│   ├── pdb-*.yaml
-│   └── networkpolicy.yaml
-├── scripts/
-│   ├── deploy.sh
-│   ├── destroy.sh
-│   └── smoke-test.sh
+├── k8s/                   # Raw manifests (Kustomize)
+├── helm/                  # Helm umbrella + subcharts
+│   ├── microservices/
+│   ├── scripts/
+│   └── README.md
+├── scripts/               # Kustomize deploy / destroy / smoke
 ├── .gitignore
 └── README.md
 ```
 
 ## Scripts (idempotent)
 
-| Script | Behavior |
-|--------|----------|
-| `deploy.sh` | `minikube image build` → `user-service:latest` + `order-service:latest` → `kubectl apply -k` → restart → tunnel |
-| `destroy.sh` | Delete namespace + remove images + stop tunnel |
-| `smoke-test.sh` | 10 read-only checks |
+| Path | Behavior |
+|------|----------|
+| `./scripts/deploy.sh` | Kustomize: build images → `kubectl apply -k` → tunnel |
+| `./helm/scripts/deploy.sh` | Helm: build images → `helm upgrade --install` → tunnel |
+| `./scripts/destroy.sh` / `./helm/scripts/destroy.sh` | Tear down namespace + images + tunnel |
+| `*/smoke-test.sh` | 10 read-only checks |
 
 ### Images: `:latest` + `imagePullPolicy: Never`
 
@@ -124,7 +123,7 @@ kubectl exec -n microservices "$POD" -- node -e \
 
 ## Production practices
 
-Namespace, **ResourceQuota**, LimitRange, ConfigMap, dedicated ServiceAccounts (`automountServiceAccountToken: false`), requests/limits, liveness/readiness probes, hardened `securityContext`, graceful SIGTERM, RollingUpdate (`maxUnavailable: 0`), HPA, PDB, NetworkPolicy, alpine non-root images, Kustomize.
+Namespace, **ResourceQuota**, LimitRange, ConfigMap, dedicated ServiceAccounts (`automountServiceAccountToken: false`), requests/limits, liveness/readiness probes, hardened `securityContext`, graceful SIGTERM, RollingUpdate (`maxUnavailable: 0`), HPA, PDB, NetworkPolicy, alpine non-root images, Kustomize **and** Helm.
 
 ## Publish as a new GitHub repo
 

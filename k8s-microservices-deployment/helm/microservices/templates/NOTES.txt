@@ -1,0 +1,30 @@
+============================================================
+  microservices chart deployed (release: {{ .Release.Name }})
+  namespace: {{ .Release.Namespace }}
+============================================================
+
+Architecture:
+  Client → user-service (LoadBalancer)
+         → http://order-service:4000/orders  (CoreDNS + ClusterIP)
+
+1. Ensure minikube tunnel is running (for LoadBalancer EXTERNAL-IP):
+     minikube tunnel
+
+2. Get EXTERNAL-IP:
+     kubectl get svc user-service -n {{ .Release.Namespace }}
+
+3. Hit the API:
+     curl http://<EXTERNAL-IP>/health
+     curl http://<EXTERNAL-IP>/api
+
+4. Smoke tests:
+     ./helm/scripts/smoke-test.sh
+
+Upgrade:
+  helm upgrade {{ .Release.Name }} ./helm/microservices -n {{ .Release.Namespace }}
+
+Rollback:
+  helm rollback {{ .Release.Name }} -n {{ .Release.Namespace }}
+
+Uninstall:
+  helm uninstall {{ .Release.Name }} -n {{ .Release.Namespace }}
