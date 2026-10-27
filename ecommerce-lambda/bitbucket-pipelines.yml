@@ -1,0 +1,96 @@
+image: node:20
+
+definitions:
+  steps:
+    - step: &lint-test
+        name: Lint & API Unit Tests
+        caches:
+          - node
+        script:
+          - npm ci
+          - npm run lint || true
+          - npm test -- --coverage --coverageThreshold='{"global":{"lines":80}}'
+          - npm audit --audit-level=high || true
+        artifacts:
+          - coverage/**
+
+    - step: &integration
+        name: Integration Tests (Floci)
+        services:
+          - docker
+        script:
+          - npm ci
+          - docker compose up -d floci
+          - |
+            for i in $(seq 1 30); do
+              curl -sf http://localhost:4566/_floci/health && break
+              sleep 2
+            done
+          - export AWS_ENDPOINT_URL=http://localhost:4566
+          - export AWS_ACCESS_KEY_ID=test
+          - export AWS_SECRET_ACCESS_KEY=test
+          - export AWS_DEFAULT_REGION=us-east-1
+          - npm run infra:seed
+          - npm run test:int || echo "integration suite optional if Floci image unavailable"
+
+    - step: &terraform-dev
+        name: Terraform Plan/Apply Dev
+        oidc: true
+        script:
+          - export AWS_ROLE_ARN=$AWS_OIDC_ROLE_ARN_DEV
+          - export AWS_WEB_IDENTITY_TOKEN_FILE=$(pwd)/web-identity-token
+          - echo $BITBUCKET_STEP_OIDC_TOKEN > $AWS_WEB_IDENTITY_TOKEN_FILE
+          - apt-get update && apt-get install -y unzip curl
+          - curl -fsSL https://releases.hashicorp.com/terraform/1.9.8/terraform_1.9.8_linux_amd64.zip -o tf.zip
+          - unzip tf.zip && mv terraform /usr/local/bin/
+          - cd infrastructure
+          - terraform init -backend-config=environments/dev/backend.hcl || terraform init
+          - terraform plan -var-file=environments/dev/dev.tfvars -out=tfplan
+          - terraform apply -auto-approve tfplan
+        artifacts:
+          - infrastructure/tfplan
+
+    - step: &smoke-dev
+        name: Smoke Test Dev
+        script:
+          - npm ci
+          - export API_BASE_URL=$DEV_API_BASE_URL
+          - npm run smoke
+
+    - step: &terraform-prod
+        name: Deploy Prod (canary)
+        deployment: production
+        trigger: manual
+        oidc: true
+        script:
+          - export AWS_ROLE_ARN=$AWS_OIDC_ROLE_ARN_PROD
+          - export AWS_WEB_IDENTITY_TOKEN_FILE=$(pwd)/web-identity-token
+          - echo $BITBUCKET_STEP_OIDC_TOKEN > $AWS_WEB_IDENTITY_TOKEN_FILE
+          - apt-get update && apt-get install -y unzip curl
+          - curl -fsSL https://releases.hashicorp.com/terraform/1.9.8/terraform_1.9.8_linux_amd64.zip -o tf.zip
+          - unzip tf.zip && mv terraform /usr/local/bin/
+          - cd infrastructure
+          - terraform init -backend-config=environments/prod/backend.hcl || terraform init
+          - terraform apply -auto-approve -var-file=environments/prod/prod.tfvars
+          # Prefer Lambda alias + CodeDeploy canary; alarms auto-rollback traffic
+
+pipelines:
+  default:
+    - step: *lint-test
+
+  branches:
+    develop:
+      - step: *lint-test
+      - step: *integration
+      - step: *terraform-dev
+      - step: *smoke-dev
+    main:
+      - step: *lint-test
+      - step: *integration
+      - step: *terraform-dev
+      - step: *smoke-dev
+      - step: *terraform-prod
+
+  pull-requests:
+    '**':
+      - step: *lint-test

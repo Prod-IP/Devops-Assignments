@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "esModuleInterop": true,
+    "paths": {
+      "@ecommerce/common": ["packages/common/src"],
+      "@ecommerce/common/*": ["packages/common/src/*"],
+      "@ecommerce/db": ["packages/db/src"],
+      "@ecommerce/db/*": ["packages/db/src/*"],
+      "@ecommerce/powertools": ["packages/powertools/src"],
+      "@ecommerce/powertools/*": ["packages/powertools/src/*"]
+    }
+  },
+  "include": ["apps/**/*", "packages/**/*", "scripts/**/*"],
+  "exclude": ["node_modules", "dist", "coverage"]
+}

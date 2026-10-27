@@ -1,0 +1,9 @@
+environment              = "dev"
+alert_email              = "devops@example.com"
+enable_nat               = false
+lambda_in_vpc            = false
+enable_waf               = false
+provisioned_concurrency  = 0
+monthly_budget           = 50
+cors_origins             = ["http://localhost:3000", "http://localhost:5173"]
+ses_from_email           = "orders-dev@example.com"

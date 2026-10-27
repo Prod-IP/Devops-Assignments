@@ -1,0 +1,12 @@
+environment              = "prod"
+alert_email              = "devops@example.com"
+enable_nat               = true
+lambda_in_vpc            = true
+enable_waf               = true
+provisioned_concurrency  = 2
+monthly_budget           = 500
+throttle_burst           = 500
+throttle_rate            = 200
+cors_origins             = ["https://admin.example.com"]
+cognito_callback_urls    = ["https://admin.example.com/callback"]
+ses_from_email           = "orders@example.com"

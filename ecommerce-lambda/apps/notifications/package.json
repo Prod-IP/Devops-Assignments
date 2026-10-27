@@ -1,0 +1,20 @@
+{
+  "name": "@ecommerce/notifications",
+  "version": "1.0.0",
+  "private": true,
+  "main": "dist/handler.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "rm -rf dist",
+    "lint": "eslint src --ext .ts",
+    "test": "jest --config ../../jest.config.ts --testPathPattern=apps/notifications/test"
+  },
+  "dependencies": {
+    "@aws-sdk/client-ses": "^3.709.0",
+    "@ecommerce/powertools": "*",
+    "uuid": "^11.0.3"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2"
+  }
+}

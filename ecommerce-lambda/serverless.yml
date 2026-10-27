@@ -1,0 +1,94 @@
+service: ecommerce-lambda
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  architecture: arm64
+  stage: ${opt:stage, 'local'}
+  region: ${env:AWS_DEFAULT_REGION, 'us-east-1'}
+  tracing:
+    lambda: true
+    apiGateway: true
+  environment:
+    AWS_ENDPOINT_URL: ${env:AWS_ENDPOINT_URL, ''}
+    USERS_TABLE: ${env:USERS_TABLE, 'ecommerce-users-local'}
+    PRODUCTS_TABLE: ${env:PRODUCTS_TABLE, 'ecommerce-products-local'}
+    CART_TABLE: ${env:CART_TABLE, 'ecommerce-cart-local'}
+    ORDERS_TABLE: ${env:ORDERS_TABLE, 'ecommerce-orders-local'}
+    IDEMPOTENCY_TABLE: ${env:IDEMPOTENCY_TABLE, 'ecommerce-idempotency-local'}
+    EVENT_BUS_NAME: ${env:EVENT_BUS_NAME, 'ecommerce-orders'}
+    PRODUCT_IMAGES_BUCKET: ${env:PRODUCT_IMAGES_BUCKET, 'ecommerce-product-images-local'}
+    NOTIFICATIONS_DRY_RUN: 'true'
+    COGNITO_CLIENT_ID: ${env:COGNITO_CLIENT_ID, ''}
+    COGNITO_USER_POOL_ID: ${env:COGNITO_USER_POOL_ID, ''}
+
+plugins:
+  - serverless-esbuild
+  - serverless-offline
+
+custom:
+  esbuild:
+    bundle: true
+    minify: false
+    sourcemap: true
+    target: node20
+    exclude:
+      - '@aws-sdk/*'
+    packager: npm
+  serverless-offline:
+    httpPort: 3000
+    lambdaPort: 3002
+    noPrependStageInUrl: true
+
+functions:
+  auth:
+    handler: apps/auth/src/lambda.handler
+    events:
+      - httpApi:
+          path: /v1/auth/{proxy+}
+          method: ANY
+      - httpApi:
+          path: /v1/health
+          method: GET
+  products:
+    handler: apps/products/src/lambda.handler
+    events:
+      - httpApi:
+          path: /v1/products
+          method: ANY
+      - httpApi:
+          path: /v1/products/{proxy+}
+          method: ANY
+  cart:
+    handler: apps/cart/src/lambda.handler
+    events:
+      - httpApi:
+          path: /v1/cart
+          method: ANY
+      - httpApi:
+          path: /v1/cart/{proxy+}
+          method: ANY
+  orders:
+    handler: apps/orders/src/lambda.handler
+    events:
+      - httpApi:
+          path: /v1/orders
+          method: ANY
+      - httpApi:
+          path: /v1/orders/{proxy+}
+          method: ANY
+  admin:
+    handler: apps/admin/src/lambda.handler
+    events:
+      - httpApi:
+          path: /v1/admin
+          method: ANY
+      - httpApi:
+          path: /v1/admin/{proxy+}
+          method: ANY
+  notifications:
+    handler: apps/notifications/src/handler.handler
+  inventory:
+    handler: apps/products/src/inventory.handler.inventoryHandler
